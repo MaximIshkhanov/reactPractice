@@ -1,8 +1,8 @@
 .wrapper {
-    width: 10%;
+    width: 100%;
     height: auto;
     position: relative;
-    padding-top: 10%;
+    padding-top: 80%;
     background-color: aquamarine;
 }
 .image{
