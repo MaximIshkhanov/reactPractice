@@ -1,7 +1,6 @@
-
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState} from '../../reducers/store'
+import { AppDispatch, RootState } from '../../reducers/store';
 import { fetchNews } from '../../reducers/news';
 
 
@@ -27,7 +26,6 @@ const NewsPage: React.FC = () => {
   if (status === 'failed') {
     return <div>Error: {error}</div>;
   }
-
 
   return (
     <div>

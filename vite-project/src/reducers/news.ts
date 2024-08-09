@@ -77,4 +77,4 @@ const newsSlice = createSlice({
 });
 
 
-export default (newsSlice.reducer);
+export default (newsSlice.reducer, fetchNews);

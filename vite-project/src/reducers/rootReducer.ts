@@ -1,38 +1,58 @@
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 
-import {
-    FETCH_NEWS_REQUEST,
-    FETCH_NEWS_SUCCESS,
-    FETCH_NEWS_FAILURE,
-} from '../actions/news';
-
-
-const initialState = {
-    status: 'idle',
-    articles: [],
-    error: null,
-};
-function newsReducer(state = initialState, action: any) {
-    switch (action.type) {
-        case FETCH_NEWS_REQUEST:
-            return {
-                ...state,
-                loading: true,
-            };
-        case FETCH_NEWS_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                news: action.payload,
-            };
-        case FETCH_NEWS_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                error: action.payload,
-            };
-        default:
-            return state;
-    }
+interface Article {
+  source: {
+    id: string | null;
+    name: string;
+  };
+  author: string | null;
+  title: string;
+  description: string;
+  url: string;
+  urlToImage: string | null;
+  publishedAt: string;
+  content: string | null;
 }
 
-export default newsReducer;
+// Thunk для получения новостей
+export const fetchNews = createAsyncThunk<Article[]>('news/fetchNews', async () => {
+  const response = await axios.get(import.meta.env.VITE_NEWS_BASE_API_URL, {
+    params: {
+      apiKey: import.meta.env.VITE_NEWS_API_KEY,
+      country: 'us'
+    }
+  });
+  return response.data.articles;
+});
+
+// Начальное состояние
+const initialState = {
+  articles: [] as Article[],
+  loading: false,
+  error: null as string | null,
+};
+
+// Slice для управления состоянием новостей
+const newsSlice = createSlice({
+  name: "news",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchNews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchNews.fulfilled, (state, action: PayloadAction<Article[]>) => {
+        state.loading = false;
+        state.articles = action.payload;
+      })
+      .addCase(fetchNews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch news';
+      });
+  },
+});
+
+export default newsSlice.reducer;
