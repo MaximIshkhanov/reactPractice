@@ -28,14 +28,19 @@ const NewsPage: React.FC = () => {
   }
 
   return (
+    
     <div>
       {articles.map((article: any, index: number) => (
         <div key={index}>
+          <hr></hr>
           <h3>{article.title}</h3>
           <p>{article.description}</p>
+          <p>{article.publishedAt}</p>
+          
         </div>
       ))}
     </div>
+    
   );
 };
 
