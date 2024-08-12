@@ -9,3 +9,17 @@
   padding: 24px;
   min-height: 100vh;
 }
+
+
+
+#newsBlock{
+  display: grid;
+  grid-template-areas:
+  "image  newsText";
+  grid-template-columns: 1fr 4fr;
+  margin-bottom: 3%;
+}
+
+#newsText{
+  grid-area: newsText;
+}

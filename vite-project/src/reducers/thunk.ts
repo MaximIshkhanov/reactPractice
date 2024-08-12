@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from 'axios';
-import { sanc } from '@sanc/core'; // Импорт из SANC Toolkit
+
 
 const BASE_URL = import.meta.env.VITE_NEWS_BASE_API_URL;
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
@@ -22,7 +22,7 @@ interface Article {
 
 // Асинхронное действие для получения новостей
 export const fetchNews = createAsyncThunk<Article[]>('news/fetchNews', async () => {
-    const response = await sanc(axios.get(BASE_URL, {
+    const response = await (axios.get(BASE_URL, {
         params: {
             apiKey: API_KEY,
             country: 'us'
