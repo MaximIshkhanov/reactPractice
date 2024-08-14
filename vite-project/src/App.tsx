@@ -1,17 +1,19 @@
-import Main from "./pages/Main/Main"
 
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-function App() {
+import NewsPage from './pages/Main/Main';
+import NewsDetailPage from './components/NewsDetailPage';
 
-
+const App: React.FC = () => {
   return (
-    <>
-    <div className="container">
+    <Router>
+      <Routes>
+        <Route path="/" element={<NewsPage />} />
+        <Route path="/news/:id" element={<NewsDetailPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
-    <Main/>
-    </div>
-    </>
-  )
-}
-
-export default App
+export default App;

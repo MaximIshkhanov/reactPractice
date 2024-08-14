@@ -50,6 +50,7 @@ export const fetchNews = createAsyncThunk<Article[], void, { rejectValue: string
 
       console.log('API Response:', response.data);
       
+      
       return response.data.articles as Article[]; // Правильное приведение к Article[]
       
     } catch (error: any) {

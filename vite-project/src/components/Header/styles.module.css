@@ -8,21 +8,21 @@
     border-radius: 14px;
     grid-template-columns: 1fr 1fr 1fr 2fr 6fr;
     grid-template-areas: 
-    "title title title title title title"
-    "time  time time time time time "
-    "dateNews titleNews authorNews select input input"
+    "dateNews  titleNews authorNews title time ."
+    "select input input input input input"
     ;
 }
 
 .title{
     margin-bottom: 0px;
     font-size: 30px;
-    justify-self: center;
+    justify-self: end;
     grid-area: title;
 }
 
 .date{
     font-size: 15px;
+    align-self: flex-end;
     justify-self: center;
     grid-area: time;
 }
@@ -46,7 +46,7 @@ select{
     border-radius: 100px;
     justify-self: end;
     border: 1px solid #000000;
-    width: 50%;
+    width: 80%;
     grid-area: select;
 }
 
@@ -56,9 +56,9 @@ select{
     margin: 10px;
     font-size: 16px;
     border-radius: 100px;
-    justify-self: start;
+    justify-self:end;
     border: 1px solid #000000;
-    width: 100%;
+    width: 80%;
     grid-area: dateNews;
     
 }
@@ -67,8 +67,8 @@ select{
     margin: 10px;
     font-size: 16px;
     border-radius: 100px;
-    justify-self: start;
-    width: 100%;
+    justify-self: center;
+    width: 80%;
     border: 1px solid #000000;
     grid-area: titleNews;
     
@@ -79,7 +79,7 @@ select{
     font-size: 16px;
     border-radius: 100px;
     justify-self: start;
-    width: 100%;
+    width: 80%;
     border: 1px solid #000000;
     grid-area: authorNews;
     

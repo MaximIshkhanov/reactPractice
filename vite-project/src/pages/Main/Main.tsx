@@ -4,23 +4,32 @@ import { AppDispatch, RootState } from '../../reducers/store';
 import { fetchNews } from '../../reducers/news';
 import ImageNews from '../../components/Image/Image';
 import Header from '../../components/Header/Header';
+import Pagination from '../../pagination/pagination';
 import { formatTimeAgo } from '../../helpers/formatTimeAgo';
+import { useNavigate } from 'react-router-dom';
 
 const NewsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { articles, loading, error } = useSelector((state: RootState) => state.news);
-
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchOption, setSearchOption] = useState(''); // Добавляем состояние для опции поиска
-  const [sortedArticles, setSortedArticles] = useState(articles); // Добавляем состояние для отсортированных новостей
-  
+  const [searchOption, setSearchOption] = useState('');
+  const [sortedArticles, setSortedArticles] = useState(articles);
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 3;
+
   useEffect(() => {
     dispatch(fetchNews());
   }, [dispatch]);
 
   useEffect(() => {
-    setSortedArticles(articles); // Обновляем отсортированные новости при изменении articles
+    setSortedArticles(articles);
   }, [articles]);
+
+  const handleNewsClick = (title: string) => {
+    navigate(`/news/${encodeURIComponent(title)}`);
+  };
+
 
   const highlightText = (text: string, query: string, option: string, targetField: string) => {
     if (!query || !text) return <>{text}</>;
@@ -45,8 +54,6 @@ const NewsPage: React.FC = () => {
                 break;
             }
 
-            // Применяем цвет, если есть совпадение
-            // и (выбрана опция ИЛИ ищем по всем полям)
             if ((i % 2) === 1 && (option === targetField || option === '')) {
               return <span key={i} style={{ backgroundColor: color }}>{part}</span>;
             } else {
@@ -99,7 +106,26 @@ const NewsPage: React.FC = () => {
     setSortedArticles(sorted);
   };
 
+  const handleSearchQueryChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Сбрасываем текущую страницу на первую при изменении поискового запроса
+  };
+
+  const handleSearchOptionChange = (option: string) => {
+    setSearchOption(option);
+    setCurrentPage(1); // Сбрасываем текущую страницу на первую при изменении опции поиска
+  };
+
   const filteredArticles = filterArticles(sortedArticles);
+
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = filteredArticles.slice(indexOfFirstArticle, indexOfLastArticle);
+  const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -111,21 +137,20 @@ const NewsPage: React.FC = () => {
 
   return (
     <div>
-      {/* Передаем searchOption, sortNewsByDate, sortNewsByTitle и sortNewsByAuthor в Header */}
       <Header
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={handleSearchQueryChange} // Используем новый обработчик
         searchOption={searchOption}
-        setSearchOption={setSearchOption}
-        sortNewsByDate={sortNewsByDate} // Передаем функцию сортировки по дате
-        sortNewsByTitle={sortNewsByTitle} // Передаем функцию сортировки по заголовку
-        sortNewsByAuthor={sortNewsByAuthor} // Передаем функцию сортировки по автору
+        setSearchOption={handleSearchOptionChange} // Используем новый обработчик
+        sortNewsByDate={sortNewsByDate}
+        sortNewsByTitle={sortNewsByTitle}
+        sortNewsByAuthor={sortNewsByAuthor}
       />
       <div id="allBlock">
-        {filteredArticles.map((article: any, index: number) => (
-          <div id="newsBlock" key={index}>
-            <ImageNews id="newsImage" image={article.urlToImage} />
-            <div id="newsText" className='sss'>
+        {currentArticles.map((article: any, index: number) => (
+          <div id="newsBlock" key={index} onClick={() => handleNewsClick(article.title)}>
+            <ImageNews image={article.urlToImage} />
+            <div id="newsText">
               <h5>{highlightText(article.author || '', searchQuery, searchOption, 'AuthorSelect')}</h5>
               <h3>{highlightText(article.title, searchQuery, searchOption, 'TitleSelect')}</h3>
               <i>{highlightText(article.description || '', searchQuery, searchOption, '')}</i>
@@ -134,6 +159,11 @@ const NewsPage: React.FC = () => {
           </div>
         ))}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
