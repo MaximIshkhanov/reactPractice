@@ -7,6 +7,8 @@ import Header from '../../components/Header/Header';
 import Pagination from '../../pagination/pagination';
 import { formatTimeAgo } from '../../helpers/formatTimeAgo';
 import { useNavigate } from 'react-router-dom';
+import LoginModal from '../LoginModal';
+import RegisterModal from '../RegisterModal';
 
 const NewsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,6 +18,9 @@ const NewsPage: React.FC = () => {
   const [searchOption, setSearchOption] = useState('');
   const [sortedArticles, setSortedArticles] = useState(articles);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const articlesPerPage = 3;
 
   useEffect(() => {
@@ -27,9 +32,12 @@ const NewsPage: React.FC = () => {
   }, [articles]);
 
   const handleNewsClick = (title: string) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     navigate(`/news/${encodeURIComponent(title)}`);
   };
-
 
   const highlightText = (text: string, query: string, option: string, targetField: string) => {
     if (!query || !text) return <>{text}</>;
@@ -146,6 +154,16 @@ const NewsPage: React.FC = () => {
         sortNewsByTitle={sortNewsByTitle}
         sortNewsByAuthor={sortNewsByAuthor}
       />
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLogin={() => setIsAuthenticated(true)}
+        />
+      )}
+      {showRegisterModal && (
+        <RegisterModal onClose={() => setShowRegisterModal(false)} />
+      )}
+      <button onClick={() => setShowRegisterModal(true)}>Register</button>
       <div id="allBlock">
         {currentArticles.map((article: any, index: number) => (
           <div id="newsBlock" key={index} onClick={() => handleNewsClick(article.title)}>
@@ -164,6 +182,7 @@ const NewsPage: React.FC = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+      
     </div>
   );
 };
