@@ -9,6 +9,7 @@ import { formatTimeAgo } from '../../helpers/formatTimeAgo';
 import { useNavigate } from 'react-router-dom';
 import LoginModal from '../LoginModal';
 import RegisterModal from '../RegisterModal';
+import UserProfile from '../LoginModal';
 
 const NewsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +22,7 @@ const NewsPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false); // Состояние для открытия профиля
   const articlesPerPage = 3;
 
   useEffect(() => {
@@ -135,6 +137,12 @@ const NewsPage: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const user = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    registrationDate: '2024-01-01',
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -154,6 +162,7 @@ const NewsPage: React.FC = () => {
         sortNewsByTitle={sortNewsByTitle}
         sortNewsByAuthor={sortNewsByAuthor}
       />
+      
       {showLoginModal && (
         <LoginModal
           onClose={() => setShowLoginModal(false)}
@@ -163,7 +172,14 @@ const NewsPage: React.FC = () => {
       {showRegisterModal && (
         <RegisterModal onClose={() => setShowRegisterModal(false)} />
       )}
+      {showUserProfile && (
+        <UserProfile user={user} onClose={() => setShowUserProfile(false)} /> // Рендерим профиль при открытии
+      )}
+      
+      <button onClick={() => setShowLoginModal(true)}>Login</button>
       <button onClick={() => setShowRegisterModal(true)}>Register</button>
+      <button onClick={() => setShowUserProfile(true)}>Profile</button> {/* Кнопка для открытия профиля */}
+      
       <div id="allBlock">
         {currentArticles.map((article: any, index: number) => (
           <div id="newsBlock" key={index} onClick={() => handleNewsClick(article.title)}>
@@ -177,12 +193,12 @@ const NewsPage: React.FC = () => {
           </div>
         ))}
       </div>
+      
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-      
     </div>
   );
 };
